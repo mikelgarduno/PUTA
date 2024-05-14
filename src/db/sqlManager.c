@@ -104,7 +104,7 @@ Categoria obtenerCategorias() {
 	printf("Lista de categorias:\n");
 	while (sqlite3_step(stmt) == SQLITE_ROW) {
 		int id = sqlite3_column_int(stmt, 0);
-		const unsigned char *nombre = sqlite3_column_text(stmt, 1);
+		char *nombre = sqlite3_column_text(stmt, 1);
 		printf("ID: %d, Nombre: %s\n", id, nombre);
 		fflush(stdout);	
 	}
@@ -113,7 +113,38 @@ Categoria obtenerCategorias() {
 	cerrarDB(db);
 
 	Categoria objCategoria;
+	int ID;
 	printf("Ingrese el ID de la categoria que desea seleccionar: ");
+	fflush(stdout);
+	scanf("%d", &ID);
+	
+	sqlite3 *db2 = abrirDB();
+	sqlite3_stmt *stmt2;
+	char sql2[] = "SELECT nombre_c FROM Categoria WHERE id_cat = ?";
+	result = sqlite3_prepare_v2(db2, sql2, strlen(sql2) + 1, &stmt2, NULL);
+	if (result != SQLITE_OK) {
+		printf("Error preparing statement: %s\n", sqlite3_errmsg(db2));
+		fflush(stdout);
+		cerrarDB(db2);
+		return;
+	}
+
+	sqlite3_bind_int(stmt2, 1, ID);
+
+	if (sqlite3_step(stmt2) == SQLITE_ROW) {
+		const unsigned char *nombre = sqlite3_column_text(stmt2, 0);
+		strcpy(objCategoria.name, nombre);
+	} else {
+		printf("No se encontró la categoría con el ID proporcionado.\n");
+		fflush(stdout);
+	}
+
+	sqlite3_finalize(stmt2);
+	cerrarDB(db2);
+	printf("La categoria seleccionada es: %s\n", objCategoria.name);
+	imprimirCategoria(&objCategoria);
+	fflush(stdout);
+	sleep(2);
 	return objCategoria;
 	}
 

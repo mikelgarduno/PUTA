@@ -370,7 +370,7 @@ system("cls");
 	fflush(stdout);
 	scanf("%s", nombre);
 	system("cls");
-
+	
 	if(comprobarCategoriaNoExiste(nombre)==1){
 	Categoria* objCategoria;
 	objCategoria = crearCategoria(nombre);
