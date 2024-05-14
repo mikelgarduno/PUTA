@@ -28,8 +28,6 @@ if (resultado != SQLITE_OK) {
 }
 }
 
-
-
 void insertarAutor(Autor objAutor) {
     sqlite3 *db = abrirDB();
     int result;
@@ -81,9 +79,75 @@ void insertarCategoria(Categoria objCategoria) {
     if (result != SQLITE_DONE) {
         printf("Error insertando datos: %s\n", sqlite3_errmsg(db));
 		fflush(stdout);
-    }
+    }else{
+		printf("Categoria insertada correctamente\n");
+		fflush(stdout);
+	}
     sqlite3_finalize(stmt1);
     cerrarDB(db);
+}
+
+Categoria obtenerCategorias() {
+	sqlite3 *db = abrirDB();
+	int result;
+
+	sqlite3_stmt *stmt;
+	const char *sql = "SELECT id_cat, nombre_c FROM Categoria";
+	result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL);
+	if (result != SQLITE_OK) {
+		printf("Error preparing statement: %s\n", sqlite3_errmsg(db));
+		fflush(stdout);
+		sqlite3_close(db);
+		return;
+	}
+
+	printf("Lista de categorias:\n");
+	while (sqlite3_step(stmt) == SQLITE_ROW) {
+		int id = sqlite3_column_int(stmt, 0);
+		const unsigned char *nombre = sqlite3_column_text(stmt, 1);
+		printf("ID: %d, Nombre: %s\n", id, nombre);
+		fflush(stdout);	
+	}
+
+	sqlite3_finalize(stmt);
+	cerrarDB(db);
+
+	Categoria objCategoria;
+	printf("Ingrese el ID de la categoria que desea seleccionar: ");
+	return objCategoria;
+	}
+
+int comprobarCategoriaNoExiste(char *nombre){
+	sqlite3 *db = abrirDB();
+	int result;
+
+	sqlite3_stmt *stmt;
+	const char *sql = "SELECT id_cat FROM Categoria WHERE nombre_c = ?";
+	result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL);
+	if (result != SQLITE_OK) {
+		printf("Error preparing statement: %s\n", sqlite3_errmsg(db));
+		fflush(stdout);
+		sqlite3_close(db);
+		return;
+	}
+
+	sqlite3_bind_text(stmt, 1, nombre, strlen(nombre), SQLITE_STATIC);
+
+	if (sqlite3_step(stmt) == SQLITE_ROW) {
+		int id = sqlite3_column_int(stmt, 0);
+		printf("La categoria %s ya existe con el ID %d\n", nombre, id);
+		fflush(stdout);
+		sqlite3_finalize(stmt);
+		cerrarDB(db);
+		return 0;
+	} else {
+		printf("La categoria %s no existe\n", nombre);
+		fflush(stdout);
+		sqlite3_finalize(stmt);
+		cerrarDB(db);
+		return 1;
+	}
+
 }
 
 void insertarEditorial(Editorial objEditorial) {

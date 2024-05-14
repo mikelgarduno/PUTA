@@ -14,6 +14,10 @@ void insertarAutor(Autor objAutor);
 void insertarCategoria(Categoria objCategoria);
 void insertarEditorial(Editorial objEditorial);
 
+int comprobarCategoriaNoExiste(char *nombre);
+
+Categoria obtenerCategorias();
+
 void mostrarAutores();
 void seleccionarAutor(int seleccion);
 
