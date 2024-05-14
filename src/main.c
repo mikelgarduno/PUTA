@@ -7,6 +7,6 @@
 
 
 int main(void) {
-empezarMenu(); // Llamamos a la función que inicia el menú
+empezarMenu();  // Llamamos a la función que inicia el menu
     return 0;
 }

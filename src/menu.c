@@ -79,10 +79,7 @@ void gestionarSubmenus(int n) { //Funcion para gestionar los submenus
 		fflush(stdout);
 		  exit(0);
 		  break;
-		  
-		case 8:
-		cerrarDB(abrirDB());
-		break;
+		
 
 	    default:
 			
@@ -376,9 +373,8 @@ system("cls");
 
 	Categoria* objCategoria;
 	objCategoria = crearCategoria(nombre);
-	imprimirCategoria(objCategoria);
-	//abrirDB();
-	//insertarCategoria(objCategoria);
+	insertarCategoria(*objCategoria);
+	destruirCategoria(objCategoria);
 
 }
 

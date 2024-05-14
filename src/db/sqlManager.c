@@ -63,12 +63,14 @@ void insertarCategoria(Categoria objCategoria) {
     int result;
 
     sqlite3_stmt *stmt1;
-    char sql[] = "INSERT INTO categoria (nombre_c) VALUES (?)";
+    char sql[] = "INSERT INTO Categoria (nombre_c) VALUES (?)";
+
+
 
     result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt1, NULL);
     if (result != SQLITE_OK) {
         printf("Error preparing statement: %s\n", sqlite3_errmsg(db));
-        guardarErrorEnLog("Error preparing statement");
+		fflush(stdout);
         sqlite3_close(db);
         return;
     }
@@ -77,8 +79,8 @@ void insertarCategoria(Categoria objCategoria) {
 
     result = sqlite3_step(stmt1);
     if (result != SQLITE_DONE) {
-        printf("Error inserting data: %s\n", sqlite3_errmsg(db));
-        guardarErrorEnLog("Error inserting data");
+        printf("Error insertando datos: %s\n", sqlite3_errmsg(db));
+		fflush(stdout);
     }
     sqlite3_finalize(stmt1);
     cerrarDB(db);
@@ -404,8 +406,6 @@ void buscarLibroPorEditorial() {
 	sqlite3_close(db);
 }
 	
-	
-
 	
 
 	
