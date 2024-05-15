@@ -8,6 +8,7 @@
 #include "../../include/editorial.h"
 #include "../../include/gestorDeArchivos.h"
 
+
 sqlite3* abrirDB() {
 	sqlite3 *db;
 	int result = sqlite3_open("biblioteca.db", &db);
@@ -94,13 +95,14 @@ void insertarCategoria(Categoria objCategoria) {
 	cerrarDB(db);
 }
 
-Categoria obtenerCategorias() {
+void insertarEditorial(Editorial objEditorial) {
 	sqlite3 *db = abrirDB();
 	int result;
 
-	sqlite3_stmt *stmt;
-	const char *sql = "SELECT id_cat, nombre_c FROM Categoria";
-	result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL);
+	sqlite3_stmt *stmt2;
+	char sql[] = "INSERT INTO editorial (nombre_e, fecha_fund) VALUES (?, ?)";
+
+	result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt2, NULL);
 	if (result != SQLITE_OK) {
 		printf("Error preparing statement: %s\n", sqlite3_errmsg(db));
 		fflush(stdout);
@@ -108,51 +110,22 @@ Categoria obtenerCategorias() {
 		return;
 	}
 
-	printf("Lista de categorias:\n");
-	while (sqlite3_step(stmt) == SQLITE_ROW) {
-		int id = sqlite3_column_int(stmt, 0);
-		char *nombre = sqlite3_column_text(stmt, 1);
-		printf("ID: %d, Nombre: %s\n", id, nombre);
+	sqlite3_bind_text(stmt2, 1, objEditorial.nombre,
+			strlen(objEditorial.nombre), SQLITE_STATIC);
+	sqlite3_bind_text(stmt2, 2, objEditorial.fecha, strlen(objEditorial.fecha),
+			SQLITE_STATIC);
+
+	result = sqlite3_step(stmt2);
+	if (result != SQLITE_DONE) {
+		printf("Error insertando datos: %s\n", sqlite3_errmsg(db));
 		fflush(stdout);
-	}
-
-	sqlite3_finalize(stmt);
-	cerrarDB(db);
-
-	Categoria objCategoria;
-	int ID;
-	printf("Ingrese el ID de la categoria que desea seleccionar: ");
-	fflush(stdout);
-	scanf("%d", &ID);
-
-	sqlite3 *db2 = abrirDB();
-	sqlite3_stmt *stmt2;
-	char sql2[] = "SELECT nombre_c FROM Categoria WHERE id_cat = ?";
-	result = sqlite3_prepare_v2(db2, sql2, strlen(sql2) + 1, &stmt2, NULL);
-	if (result != SQLITE_OK) {
-		printf("Error preparing statement: %s\n", sqlite3_errmsg(db2));
-		fflush(stdout);
-		cerrarDB(db2);
-		return;
-	}
-
-	sqlite3_bind_int(stmt2, 1, ID);
-
-	if (sqlite3_step(stmt2) == SQLITE_ROW) {
-		const unsigned char *nombre = sqlite3_column_text(stmt2, 0);
-		strcpy(objCategoria.name, nombre);
 	} else {
-		printf("No se encontró la categoría con el ID proporcionado.\n");
+		printf("Editorial insertada correctamente\n");
 		fflush(stdout);
 	}
 
 	sqlite3_finalize(stmt2);
-	cerrarDB(db2);
-	printf("La categoria seleccionada es: %s\n", objCategoria.name);
-	imprimirCategoria(&objCategoria);
-	fflush(stdout);
-	sleep(2);
-	return objCategoria;
+	cerrarDB(db);
 }
 
 int comprobarCategoriaNoExiste(char *nombre) {
@@ -272,99 +245,103 @@ int comprobarLibroExistente(char *isbn) {
 	cerrarDB(db);
 }
 
-void insertarEditorial(Editorial objEditorial) {
-	sqlite3 *db = abrirDB();
+int seleccionarAutor() {
+
 	int result;
-
-	sqlite3_stmt *stmt2;
-	char sql[] = "INSERT INTO editorial (nombre_e, fecha_fund) VALUES (?, ?)";
-
-	result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt2, NULL);
+	sqlite3 *db = abrirDB();
+	sqlite3_stmt *stmt;
+	char sql[] = "SELECT id_aut, nombre_a, fecha_ncto, lugar_ncto  FROM autor";
+	result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL);
 	if (result != SQLITE_OK) {
 		printf("Error preparing statement: %s\n", sqlite3_errmsg(db));
 		fflush(stdout);
-		sqlite3_close(db);
+		cerrarDB(db);
 		return;
 	}
 
-	sqlite3_bind_text(stmt2, 1, objEditorial.nombre,
-			strlen(objEditorial.nombre), SQLITE_STATIC);
-	sqlite3_bind_text(stmt2, 2, objEditorial.fecha, strlen(objEditorial.fecha),
-			SQLITE_STATIC);
-
-	result = sqlite3_step(stmt2);
-	if (result != SQLITE_DONE) {
-		printf("Error insertando datos: %s\n", sqlite3_errmsg(db));
-		fflush(stdout);
-	} else {
-		printf("Editorial insertada correctamente\n");
+	printf("Lista de autores:\n");
+	while (sqlite3_step(stmt) == SQLITE_ROW) {
+		int id = sqlite3_column_int(stmt, 0);
+		char *nombre = sqlite3_column_text(stmt, 1);
+		char *fecha = sqlite3_column_text(stmt, 2);
+		char *lugar = sqlite3_column_text(stmt, 3);
+		printf("ID: %d, Nombre: %s, Lugar y Fecha de nacimiento: %s, %s\n", id, nombre,lugar,fecha);
 		fflush(stdout);
 	}
 
-	sqlite3_finalize(stmt2);
+	sqlite3_finalize(stmt);
 	cerrarDB(db);
+
+	int ID;
+	printf("Ingrese el ID del autor que desea seleccionar: ");
+	fflush(stdout);
+	scanf("%d", &ID);
+return ID;
 }
 
-void mostrarAutores() {
-	sqlite3 *db = abrirDB();
+int seleccionarCategoria(){
+sqlite3 *db = abrirDB();
 	int result;
 
-	// Preparar el statement SQL para recuperar los nombres de los autores
-	sqlite3_stmt *stmt3;
-	char sql[] = "SELECT id_aut, nombre_a FROM autor";
-	result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt3, NULL);
+	sqlite3_stmt *stmt;
+	const char *sql = "SELECT id_cat, nombre_c FROM Categoria";
+	result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL);
 	if (result != SQLITE_OK) {
 		printf("Error preparing statement: %s\n", sqlite3_errmsg(db));
-		guardarErrorEnLog("Error preparing statement");
+		fflush(stdout);
 		sqlite3_close(db);
 		return;
 	}
 
-	// Ejecutar la consulta y recuperar los nombres de los autores
-	while (sqlite3_step(stmt3) == SQLITE_ROW) {
-		const unsigned char *codAut = sqlite3_column_text(stmt3, 1);
-		printf("%s\n", codAut);
+	printf("Lista de categorias:\n");
+	while (sqlite3_step(stmt) == SQLITE_ROW) {
+		int id = sqlite3_column_int(stmt, 0);
+		char *nombre = sqlite3_column_text(stmt, 1);
+		printf("ID: %d, Nombre: %s\n", id, nombre);
+		fflush(stdout);
 	}
-	// Finalizar la consulta anterior
-	sqlite3_finalize(stmt3);
+
+	sqlite3_finalize(stmt);
 	cerrarDB(db);
+
+	int ID;
+	printf("Ingrese el ID de la categoria que desea seleccionar: ");
+	fflush(stdout);
+	scanf("%d", &ID);
+return ID;
 }
 
-void seleccionarAutor(int selecionado) {
-	sqlite3 *db = abrirDB();
+int seleccionarEditorial(){
+sqlite3 *db = abrirDB();
 	int result;
 
-	// Preparar el statement SQL para recuperar los títulos de los libros del autor seleccionado
-	sqlite3_stmt *stmt5;
-	const char *sql5 = "SELECT titulo FROM libro WHERE id_aut = ?";
-	result = sqlite3_prepare_v2(db, sql5, strlen(sql5) + 1, &stmt5, NULL);
+	sqlite3_stmt *stmt;
+	const char *sql = "SELECT id_edi, nombre_e,fecha_fund FROM Editorial";
+	result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL);
 	if (result != SQLITE_OK) {
 		printf("Error preparing statement: %s\n", sqlite3_errmsg(db));
-		guardarErrorEnLog("Error preparing statement");
-		sqlite3_close(db);
+		fflush(stdout);
+		cerrarDB(db);
 		return;
 	}
 
-	// Vincular el valor del ID del autor al marcador de posición
-	result = sqlite3_bind_int(stmt5, 1, selecionado);
-	if (result != SQLITE_OK) {
-		printf("Error binding parameter: %s\n", sqlite3_errmsg(db));
-		guardarErrorEnLog("Error binding parameter");
-		sqlite3_finalize(stmt5);
-		sqlite3_close(db);
-		return;
+	printf("Lista de editoriales:\n");
+	while (sqlite3_step(stmt) == SQLITE_ROW) {
+		int id = sqlite3_column_int(stmt, 0);
+		char *nombre = sqlite3_column_text(stmt, 1);
+		char *fecha = sqlite3_column_text(stmt, 2);
+		printf("ID: %d, Nombre: %s, Fecha de fundacion: %s\n", id, nombre, fecha);
+		fflush(stdout);
 	}
 
-	// Ejecutar la consulta y recuperar los títulos de los libros
-	printf("Libros del autor %d:\n", selecionado);
-	while (sqlite3_step(stmt5) == SQLITE_ROW) {
-		const unsigned char *bookTitle = sqlite3_column_text(stmt5, 0);
-		printf("%s\n", bookTitle);
-	}
-
-	// Clean up
-	sqlite3_finalize(stmt5);
+	sqlite3_finalize(stmt);
 	cerrarDB(db);
+
+	int ID;
+	printf("Ingrese el ID de la editorial que desea seleccionar: ");
+	fflush(stdout);
+	scanf("%d", &ID);
+return ID;
 }
 
 void insertarLibro(Libro objLibro) {

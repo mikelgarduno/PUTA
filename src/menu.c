@@ -150,9 +150,9 @@ void MenuSubir(){ //Funcion para subir un libro
 	fflush(stdout);
 	char isbn[50];
 	char titulo[50];
-	char autor[50];
-	char categoria[50];
-	char editorial[50];
+	int autor;
+	int categoria;
+	int editorial;
 	char fecha[5];
 	char contenido[5000];
 
@@ -178,31 +178,7 @@ void MenuSubir(){ //Funcion para subir un libro
 		"############################\n"
 	);
 	fflush(stdout);
-	scanf("%s", titulo);
-	system("cls");
-
-	printf(
-		"############################\n"
-		"#        Introducir        #\n"
-		"#           Autor          #\n"
-		"############################\n"
-		"#    Inserte el nombre     #\n"
-		"############################\n"
-	);
-	fflush(stdout);
-	scanf("%s", autor);
-	system("cls");
-
-	printf(
-		"############################\n"
-		"#        Introducir        #\n"
-		"#         Editorial        #\n"
-		"############################\n"
-		"#    Inserte el nombre     #\n"
-		"############################\n"
-	);
-	fflush(stdout);
-	scanf("%s", editorial);
+	scanf("%[^\n]s", titulo);
 	system("cls");
 
 	printf(
@@ -218,20 +194,6 @@ void MenuSubir(){ //Funcion para subir un libro
 	scanf("%s", fecha);
 	system("cls");
 
-printf(
-		"############################\n"
-		"#        Introducir        #\n"
-		"#        Categoria         #\n"
-		"############################\n"
-		"#     Inserte el nombre    #\n"
-		"# 	de la categoria         #\n"
-		"############################\n"
-	);
-	fflush(stdout);
-	scanf("%s", categoria);
-	system("cls");
-
-
 	printf(
 		"############################\n"
 		"#        Introducir        #\n"
@@ -241,9 +203,12 @@ printf(
 		"############################\n"
 	);
 	fflush(stdout);
-	scanf("%s", contenido);
+	scanf("%[^\n]s", contenido);
 	system("cls");
 	
+	autor =  seleccionarAutor();
+	categoria = seleccionarCategoria();
+	editorial = seleccionarEditorial();
 
 	if(comprobarLibroExistente(isbn)==1){
 		Libro* objLibro;
@@ -275,7 +240,7 @@ system("cls");
 		"############################\n"
 	);
 	fflush(stdout);
-	scanf("%s",nombre);
+	scanf("%[^\n]s", nombre);
 	system("cls");
 
 	printf(
@@ -392,6 +357,7 @@ void empezarMenu(){ //Funcion para empezar el menu
 	gestionarSubmenus(seleccionarOpcionMenus());
 	}
 }
+
 
 void buscarPorAutor() {
     system("cls");

@@ -24,7 +24,9 @@ int comprobarLibroExistente(char *isbn);
 Categoria obtenerCategorias();
 
 void mostrarAutores();
-void seleccionarAutor(int seleccion);
+int seleccionarAutor();
+int seleccionarCategoria();
+int seleccionarEditorial();
 
 void buscarLibroPorTitulo(char *titulo);
 void buscarLibroPorCategoria();
