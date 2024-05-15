@@ -58,7 +58,7 @@ void gestionarSubmenus(int n) { //Funcion para gestionar los submenus
 	      break;
 
 	    case 3:
-		  MenuModificar();
+		  MenuBorrarLibro();
 		  break;
 
 		case 4:
@@ -145,13 +145,16 @@ system("cls");
 
 
 void MenuSubir(){ //Funcion para subir un libro
-system("cls");
-printf("Recuerde que para subir un libro, es necesario\nhaber registrado previamente el autor, la editorial y la categoria\n");
-fflush(stdout);
-char isbn[50];
-char titulo[50]; 
-char fecha[5];
-char contenido[5000];
+	system("cls");
+	printf("Recuerde que para subir un libro, es necesario\nhaber registrado previamente el autor, la editorial y la categoria\n");
+	fflush(stdout);
+	char isbn[50];
+	char titulo[50];
+	char autor[50];
+	char categoria[50];
+	char editorial[50];
+	char fecha[5];
+	char contenido[5000];
 
 
 	printf(
@@ -164,7 +167,7 @@ char contenido[5000];
 	);
 	fflush(stdout);
 	scanf("%s", isbn);
-
+	system("cls");
 
 	printf(
 		"############################\n"
@@ -176,8 +179,32 @@ char contenido[5000];
 	);
 	fflush(stdout);
 	scanf("%s", titulo);
-
 	system("cls");
+
+	printf(
+		"############################\n"
+		"#        Introducir        #\n"
+		"#           Autor          #\n"
+		"############################\n"
+		"#    Inserte el nombre     #\n"
+		"############################\n"
+	);
+	fflush(stdout);
+	scanf("%s", autor);
+	system("cls");
+
+	printf(
+		"############################\n"
+		"#        Introducir        #\n"
+		"#         Editorial        #\n"
+		"############################\n"
+		"#    Inserte el nombre     #\n"
+		"############################\n"
+	);
+	fflush(stdout);
+	scanf("%s", editorial);
+	system("cls");
+
 	printf(
 		"############################\n"
 		"#        Introducir        #\n"
@@ -189,8 +216,22 @@ char contenido[5000];
 	);
 	fflush(stdout);
 	scanf("%s", fecha);
-
 	system("cls");
+
+printf(
+		"############################\n"
+		"#        Introducir        #\n"
+		"#        Categoria         #\n"
+		"############################\n"
+		"#     Inserte el nombre    #\n"
+		"# 	de la categoria         #\n"
+		"############################\n"
+	);
+	fflush(stdout);
+	scanf("%s", categoria);
+	system("cls");
+
+
 	printf(
 		"############################\n"
 		"#        Introducir        #\n"
@@ -201,104 +242,20 @@ char contenido[5000];
 	);
 	fflush(stdout);
 	scanf("%s", contenido);
-
 	system("cls");
 	
 
-	//Libro* objLibro;
-
-	//crear_libro(isbn, titulo, fecha, contenido);
-
-	//abrirDB();
-	//insertarLibro(objLibro);
-
+	if(comprobarLibroExistente(isbn)==1){
+		Libro* objLibro;
+		objLibro = crear_libro(isbn, titulo, autor, editorial,categoria,fecha, contenido);
+		insertarLibro(*objLibro);
+		destruir_libro(objLibro);
+	}
 }
 
 
-void MenuModificar(){ 		//Funcion para modificar un libro
-/* system("cls");
+void MenuBorrarLibro(){ 		
 
-	char *name[50];
-	char *title[50];
-	char *date[50];
-	char *place[50];
-	char *category[50];
-	char *edit[50];
-
-	printf(
-		"############################\n"
-		"#--------------------------#\n"
-		"#         Modificar        #\n"
-		"#          Libro           #\n"
-		"############################\n"
-	);
-	
-	buscarPor();
-	autor();
-	endMenuShorter();
-	insertarNombre();
-	//FFLUSH(stdout);
-	scanf("%s", name);
-	system("cls");
-
-	modificar();
-	libro();
-	endMenu();
-
-	buscarPor();
-	fecha();
-	endMenuShorter();
-	insertarFechaNacimiento();
-	//FFLUSH(stdout);
-	scanf("%s", date);
-	system("cls");
-
-	modificar();
-	libro();
-	endMenu();
-
-	buscarPor();
-	titulo();
-	endMenuShorter();
-	insertarNombre();
-	//FFLUSH(stdout);
-	scanf("%s", title);
-	system("cls");
-
-	modificar();
-	libro();
-	endMenu();
-
-	buscarPor();
-	categoria();
-	endMenuShorter();
-	insertarNombre();
-	//FFLUSH(stdout);
-	scanf("%s", category);
-	system("cls");
-
-	modificar();
-	libro();
-	endMenu();
-
-	buscarPor();
-	editorial();
-	endMenuShorter();
-	insertarNombre();
-	//FFLUSH(stdout);
-	scanf("%s", edit);
-	system("cls");
-
-	// PUT THE NEW DATA IN DATABASE AND MANAGE THE ERRORS
-	// CONNECT WITH THE REST OF THE APLICATION
-
-	//free(name);
-	//free(title);
-	//free(date);
-	//free(place);
-	//free(category);
-	//free(edit);
- */
 }
 
 
@@ -318,7 +275,6 @@ system("cls");
 		"############################\n"
 	);
 	fflush(stdout);
-	
 	scanf("%s",nombre);
 	system("cls");
 
@@ -340,16 +296,13 @@ system("cls");
 	);
 	fflush(stdout);
 	scanf("%s", lugar);
-
 	system("cls");
-	Autor* objAutor;
-	objAutor = crear_autor(nombre, fecha, lugar);
-	imprimir_autor(*objAutor);
-
-//abrirDB();
-//	insertarAutor(objAutor);
-	
-
+	if(comprobarAutorNoExiste(nombre)==1){
+		Autor* objAutor;
+		objAutor = crear_autor(nombre, fecha, lugar);
+		insertarAutor(*objAutor);
+		destruir_autor(objAutor);
+	}
 
 }
 
@@ -408,16 +361,13 @@ system("cls");
 	scanf("%s",fecha);
 	system("cls");
 
-	Editorial* objEditorial;
-	objEditorial = crear_editorial(nombre, fecha);
-	imprimirEditorial(*objEditorial);
-	// PUT THE NEW DATA IN DATABASE AND MANAGE THE ERRORS
-	// CONNECT WITH THE REST OF THE APLICATION j
-
-	//abrirDB();
-	//insertarEditorial(objEditorial); 
-
-
+	if(comprobarEditorialNoExiste(nombre)==1){
+		Editorial* objEditorial;
+		objEditorial = crear_editorial(nombre, fecha);
+		insertarEditorial(*objEditorial);
+		destruir_editorial(objEditorial);
+	}
+	//imprimirEditorial(*objEditorial);
 }
 
 void cargando(){ //Funcion para simular un cargando

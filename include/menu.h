@@ -8,7 +8,7 @@ int seleccionarOpcionMenus();
 
 void MenuDescargar();
 void MenuSubir();
-void MenuModificar();
+void MenuBorrarLibro();
 
 void MenuRegistrarAutor();
 void MenuRegistrarCategoria();
